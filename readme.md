@@ -144,4 +144,56 @@ The dataset contains **two skin disease classes**:
 1. **Basal Cell Carcinoma**
 2. **Melanoma**
 
-### 🔹 Dataset Structure
+
+### 🔹 Dataset Splits
+- **Training set:** Used to learn model parameters  
+- **Validation set:** Used for tuning and performance monitoring  
+- **Test set:** Used for final evaluation  
+
+### 🔹 Challenges Identified
+- Class imbalance (common in medical datasets)
+- High visual similarity between lesion types
+- Small dataset size → risk of overfitting
+- Sensitivity of medical image classification tasks
+
+---
+
+## 🧠 Model Training
+
+### 🔹 Model Used
+- **YOLOv8 Classification Model (Ultralytics)**
+- Pretrained weights: `yolov8n-cls.pt`
+
+### 🔹 Training Environment
+- **Platform:** Google Colab  
+- **Hardware:** GPU (CUDA enabled)  
+- **Frameworks:** PyTorch, Ultralytics YOLOv8  
+
+### 🔹 Training Configuration
+- Image size: `224 × 224`
+- Optimizer: Adam
+- Epochs: 30
+- Batch size: 32
+- Transfer learning using pretrained weights
+
+### 🔹 Training Command
+The YOLOv8 model was trained directly using the dataset folder structure provided by Roboflow.
+
+---
+
+## 🔍 Model Evaluation & Prediction
+
+### 🔹 Validation
+- Model performance was monitored using validation accuracy and loss metrics
+- Training logs and metrics were stored automatically by Ultralytics
+
+### 🔹 Prediction on Test Data
+During inference, it was observed that YOLOv8 **does not recursively scan subdirectories** for images.  
+To handle this, a wildcard path was used to correctly locate test images.
+
+```python
+model.predict(
+    source="skin-1/test/*/*",
+    save=True
+)
+
