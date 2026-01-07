@@ -1,15 +1,15 @@
-# 📘 Week 2 Work: Image Processing & Medical Imaging Dataset Exploration
+#  Week 2 Work: Image Processing & Medical Imaging Dataset Exploration
 
-## 📌 Objective
+##  Objective
 The objective of this week’s work is to:
 1. Understand basic **image processing techniques** using Python.
 2. Explore and critically analyze **real-world medical imaging datasets** used in machine learning and healthcare applications.
 
 ---
 
-## 🧪 Part 1: Image Processing in Python
+##  Part 1: Image Processing in Python
 
-### 🔧 Tools & Libraries Used
+###  Tools & Libraries Used
 - **OpenCV (cv2)** – Image loading, resizing, edge detection, filtering
 - **NumPy** – Numerical operations on image matrices
 - **Matplotlib** – Image and histogram visualization
@@ -17,7 +17,7 @@ The objective of this week’s work is to:
 
 ---
 
-### 🖼️ Image Processing Steps Performed
+###  Image Processing Steps Performed
 
 #### 1. Image Loading
 Two images were loaded using OpenCV and converted from **BGR to RGB** format for correct visualization.
@@ -50,32 +50,32 @@ Two images were loaded using OpenCV and converted from **BGR to RGB** format for
 
 ---
 
-## 🏥 Part 2: Medical Imaging Dataset Exploration
+##  Part 2: Medical Imaging Dataset Exploration
 
 ### Dataset 1: Chest X-ray Dataset (NIH)
 
-#### 📌 Source
+####  Source
 Provided by **:contentReference[oaicite:1]{index=1}**
 
-#### 📊 Basic Information
+####  Basic Information
 - **Type:** Chest X-ray (Radiography)
 - **Images:** ~112,000
 - **Patients:** ~30,000
 - **Labels:** 14 disease categories  
   (Pneumonia, Cardiomegaly, Edema, Fibrosis, etc.)
 
-#### ⚖️ Dataset Imbalance
+####  Dataset Imbalance
 - Highly imbalanced dataset
 - “No Finding” class dominates
 - Rare diseases have very few samples
 
-#### ⚠️ Challenges
+####  Challenges
 - Weak labels (auto-extracted from reports)
 - Multi-label overlap
 - Varying image quality
 - High noise in lung regions
 
-#### 📝 Summary
+####  Summary
 This dataset is well-suited for **multi-label classification**, but requires:
 - Class balancing techniques
 - Robust preprocessing
@@ -86,26 +86,26 @@ This dataset is well-suited for **multi-label classification**, but requires:
 
 ### Dataset 2: Skin Cancer Dataset (HAM10000)
 
-#### 📌 Source
+####  Source
 Available on **:contentReference[oaicite:3]{index=3}**
 
-#### 📊 Basic Information
+####  Basic Information
 - **Type:** Dermoscopic skin lesion images
 - **Images:** ~10,000
 - **Classes:** 7  
   (Melanoma, Nevus, Basal cell carcinoma, Actinic keratosis, etc.)
 
-#### ⚖️ Dataset Imbalance
+####  Dataset Imbalance
 - Benign nevus class dominates
 - Melanoma samples are significantly fewer
 
-#### ⚠️ Challenges
+####  Challenges
 - High visual similarity between classes
 - Skin tone and lighting variation
 - Small lesion sizes
 - Annotation uncertainty
 
-#### 📝 Summary
+####  Summary
 This dataset is widely used for **skin cancer detection**, but requires:
 - Data augmentation
 - Color normalization
@@ -115,42 +115,42 @@ This dataset is widely used for **skin cancer detection**, but requires:
 
 ---
 
-## ✅ Conclusion
+##  Conclusion
 Week 2 focused on developing a strong foundation in image preprocessing and understanding real-world challenges in medical imaging datasets. These skills are essential for building reliable and clinically useful machine learning models.
 
 ---
 
 
-# 📅 Week 3: Skin Disease Image Classification using YOLOv8
+#  Week 3: Skin Disease Image Classification using YOLOv8
 
-## 📌 Objective
+##  Objective
 The objective of Week 3 was to explore a medical image dataset from Roboflow and train a deep learning–based **image classification model** using **Ultralytics YOLOv8** on Google Colab with GPU acceleration.
 
 ---
 
-## 📂 Dataset Exploration
+##  Dataset Exploration
 
-### 🔹 Dataset Source
+###  Dataset Source
 - **Platform:** Roboflow Universe  
 - **Dataset Name:** Skin Disease Dataset  
 - **Version:** skin-1  
 
-### 🔹 Type of Images
+###  Type of Images
 - RGB clinical / dermoscopic skin lesion images
 - Images vary in lighting, skin tone, and lesion appearance
 
-### 🔹 Classes
+###  Classes
 The dataset contains **two skin disease classes**:
 1. **Basal Cell Carcinoma**
 2. **Melanoma**
 
 
-### 🔹 Dataset Splits
+###  Dataset Splits
 - **Training set:** Used to learn model parameters  
 - **Validation set:** Used for tuning and performance monitoring  
 - **Test set:** Used for final evaluation  
 
-### 🔹 Challenges Identified
+###  Challenges Identified
 - Class imbalance (common in medical datasets)
 - High visual similarity between lesion types
 - Small dataset size → risk of overfitting
@@ -158,36 +158,36 @@ The dataset contains **two skin disease classes**:
 
 ---
 
-## 🧠 Model Training
+##  Model Training
 
-### 🔹 Model Used
+###  Model Used
 - **YOLOv8 Classification Model (Ultralytics)**
 - Pretrained weights: `yolov8n-cls.pt`
 
-### 🔹 Training Environment
+###  Training Environment
 - **Platform:** Google Colab  
 - **Hardware:** GPU (CUDA enabled)  
 - **Frameworks:** PyTorch, Ultralytics YOLOv8  
 
-### 🔹 Training Configuration
+###  Training Configuration
 - Image size: `224 × 224`
 - Optimizer: Adam
 - Epochs: 30
 - Batch size: 32
 - Transfer learning using pretrained weights
 
-### 🔹 Training Command
+###  Training Command
 The YOLOv8 model was trained directly using the dataset folder structure provided by Roboflow.
 
 ---
 
-## 🔍 Model Evaluation & Prediction
+##  Model Evaluation & Prediction
 
-### 🔹 Validation
+###  Validation
 - Model performance was monitored using validation accuracy and loss metrics
 - Training logs and metrics were stored automatically by Ultralytics
 
-### 🔹 Prediction on Test Data
+###  Prediction on Test Data
 During inference, it was observed that YOLOv8 **does not recursively scan subdirectories** for images.  
 To handle this, a wildcard path was used to correctly locate test images.
 
