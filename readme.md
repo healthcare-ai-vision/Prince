@@ -196,4 +196,196 @@ model.predict(
     source="skin-1/test/*/*",
     save=True
 )
+```
+
+
+# Week 4:TIGER TILs Detection using YOLOv8
+
+This Week 4 project demonstrates an end-to-end implementation of a YOLOv8 object detection pipeline to detect and quantify lymphocytes and plasma cells (TILs — Tumor Infiltrating Lymphocytes) in Whole Slide Imaging (WSI) regions of interest (ROIs). The dataset was obtained from Roboflow (wsiroisimages, v1) and formatted for YOLOv8. The model was fine-tuned from a pre-trained YOLOv8s checkpoint and evaluated on the validation split.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Repository structure](#repository-structure)
+- [Dataset](#dataset)
+  - [Download](#download)
+  - [Inspect / Visualize](#inspect--visualize)
+- [Model Training](#model-training)
+- [Evaluation](#evaluation)
+- [Inference](#inference)
+- [Results & Expected Outputs](#results--expected-outputs)
+- [Reproducibility](#reproducibility)
+- [Tips & Troubleshooting](#tips--troubleshooting)
+- [Authors / Contact](#authors--contact)
+- [License](#license)
+
+---
+
+## Installation
+
+Recommended Python: 3.8+
+
+Install the minimal required packages used for this project:
+
+```bash
+pip install -q ultralytics roboflow opencv-python matplotlib
+```
+
+Notes:
+- Install PyTorch separately according to your platform and CUDA version if you plan to train with GPU acceleration. See https://pytorch.org/.
+- ultralytics includes YOLOv8 APIs used in the training examples below.
+
+---
+
+## Repository structure (expected for Week4)
+
+- `Week4/`
+  - `notebooks/` — Jupyter notebooks used for experimentation
+    - `Week4_experiment.ipynb`
+  - `data/` — (optional) raw / processed dataset or download scripts
+  - `wsiroisimages-1/` — Roboflow downloaded dataset (YOLO format)
+    - `train/images`, `train/labels`, `valid/images`, `valid/labels`
+    - `data.yaml`
+  - `src/` — optional scripts (train.py / eval.py / predict.py)
+  - `results/` — saved models, logs, visual outputs
+  - `README.md` — this file
+
+If your folder layout differs, update paths in the examples below accordingly.
+
+---
+
+## Dataset
+
+Dataset: `wsiroisimages` (Roboflow) — version 1, YOLO format. Contains WSI ROI images annotated for lymphocytes and plasma cells.
+
+### Download (Roboflow)
+
+Replace `YOUR_ROBOFLOW_API_KEY` with your Roboflow API key:
+
+```python
+from roboflow import Roboflow
+import yaml
+
+rf = Roboflow(api_key="YOUR_ROBOFLOW_API_KEY")  # Replace with your Roboflow API key
+project = rf.workspace("xray-u9rf3").project("wsiroisimages")
+dataset = project.version(1).download("yolov8")
+
+with open("wsiroisimages-1/data.yaml", "r") as f:
+    data_cfg = yaml.safe_load(f)
+print(data_cfg)
+```
+
+### Inspect / Visualize
+
+Quick check to visualize one training image and its YOLO-format bounding boxes:
+
+```python
+import os
+import cv2
+import matplotlib.pyplot as plt
+
+img_path = "wsiroisimages-1/train/images"
+lbl_path = "wsiroisimages-1/train/labels"
+
+img_file = os.listdir(img_path)[0]
+label_file = img_file.replace(".jpg", ".txt")
+
+img = cv2.imread(os.path.join(img_path, img_file))
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+h, w, _ = img.shape
+
+with open(os.path.join(lbl_path, label_file)) as f:
+    for line in f:
+        cls, xc, yc, bw, bh = map(float, line.split())
+        x1 = int((xc - bw/2) * w)
+        y1 = int((yc - bh/2) * h)
+        x2 = int((xc + bw/2) * w)
+        y2 = int((yc + bh/2) * h)
+        cv2.rectangle(img, (x1,y1), (x2,y2), (255,0,0), 1)
+
+plt.imshow(img)
+plt.axis("off")
+plt.show()
+```
+
+---
+
+## Model Training
+
+This project fine-tuned a pre-trained YOLOv8s model for 50 epochs with batch size 8 using the AdamW optimizer.
+
+Example training code (Ultralytics YOLO API):
+
+```python
+from ultralytics import YOLO
+
+model = YOLO("yolov8s.pt")
+
+model.train(
+    data="wsiroisimages-1/data.yaml",
+    imgsz=512,
+    epochs=50,
+    batch=8,
+    optimizer="AdamW",
+    lr0=1e-3,
+    device=0,  # GPU device index; change to 'cpu' or omit if using CPU
+    workers=4,
+    project="TIGER_TILs",
+    name="yolov8_tils_detector"
+)
+```
+
+Hyperparameters used (example):
+- img size: 512
+- epochs: 50
+- batch size: 8
+- optimizer: AdamW
+- initial learning rate: 1e-3
+
+Adjust these depending on GPU memory and dataset size.
+
+---
+
+## Evaluation
+
+After training, validate the model on the validation set to compute standard detection metrics (Precision, Recall, mAP50, mAP50-95).
+
+Example:
+
+```python
+metrics = model.val()
+print(metrics)
+```
+
+Typical evaluation outputs:
+- Precision, Recall
+- mAP@0.50
+- mAP@0.50:0.95 (COCO-style)
+- Per-class metrics (if multi-class)
+
+---
+
+## Inference
+
+Run inference on the validation images (or any image/directory). Results (image outputs with predictions) can be saved.
+
+Example:
+
+```python
+model.predict(
+    source="wsiroisimages-1/valid/images",
+    imgsz=512,
+    conf=0.25,
+    save=True
+)
+```
+
+Outputs:
+- Annotated images saved to `runs/detect/predict` (Ultralytics default) or under the `project/name` folder if specified.
+
+You can also perform single-image inference and programmatically parse predictions for quantification.
+
+---
+
 
